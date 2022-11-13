@@ -1,75 +1,75 @@
-import time
-import sys
+import configparser
 import logging
-from logging.handlers import RotatingFileHandler
-from getSongInfo import getSongInfo
-import requests
+import os
+import sys
+import time
 from io import BytesIO
+from logging.handlers import RotatingFileHandler
+
+import requests
+import socketio  # upm package(python-socketio)
 from PIL import Image
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
-import sys,os
-import configparser
 
-if len(sys.argv) > 2:
-    username = sys.argv[1]
-    token_path = sys.argv[2]
+#Setup sockets 
+sio = socketio.Client()
+sio.connect('https://personal-spotify-handler.fly.dev')
 
-    # Configuration file    
-    dir = os.path.dirname(__file__)
-    filename = os.path.join(dir, '../config/rgb_options.ini')
+# Configuration file    
+dir = os.path.dirname(__file__)
+filename = os.path.join(dir, '../config/rgb_options.ini')
 
-    # Configures logger for storing song data    
-    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename='spotipy.log',level=logging.INFO)
-    logger = logging.getLogger('spotipy_logger')
+# Configures logger for storing song data    
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename='spotipy.log',level=logging.INFO)
+logger = logging.getLogger('spotipy_logger')
 
-    # automatically deletes logs more than 2000 bytes
-    handler = RotatingFileHandler('spotipy.log', maxBytes=2000,  backupCount=3)
-    logger.addHandler(handler)
+# automatically deletes logs more than 2000 bytes
+handler = RotatingFileHandler('spotipy.log', maxBytes=2000,  backupCount=3)
+logger.addHandler(handler)
 
-    # Configuration for the matrix
-    config = configparser.ConfigParser()
-    config.read(filename)
+# Configuration for the matrix
+config = configparser.ConfigParser()
+config.read(filename)
 
-    options = RGBMatrixOptions()
-    options.rows = int(config['DEFAULT']['rows'])
-    options.cols = int(config['DEFAULT']['columns'])
-    options.chain_length = int(config['DEFAULT']['chain_length'])
-    options.parallel = int(config['DEFAULT']['parallel'])
-    options.hardware_mapping = config['DEFAULT']['hardware_mapping']
-    options.gpio_slowdown = int(config['DEFAULT']['gpio_slowdown'])
-    options.brightness = int(config['DEFAULT']['brightness'])
-    options.limit_refresh_rate_hz = int(config['DEFAULT']['refresh_rate'])
+options = RGBMatrixOptions()
+options.rows = int(config['DEFAULT']['rows'])
+options.cols = int(config['DEFAULT']['columns'])
+options.chain_length = int(config['DEFAULT']['chain_length'])
+options.parallel = int(config['DEFAULT']['parallel'])
+options.hardware_mapping = config['DEFAULT']['hardware_mapping']
+options.gpio_slowdown = int(config['DEFAULT']['gpio_slowdown'])
+options.panel_type = int(config['DEFAULT']['panel_type'])
+options.brightness = int(config['DEFAULT']['brightness'])
+options.limit_refresh_rate_hz = int(config['DEFAULT']['refresh_rate'])
 
-    default_image = os.path.join(dir, config['DEFAULT']['default_image'])
-    print(default_image)
-    matrix = RGBMatrix(options = options)
+default_image = os.path.join(dir, config['DEFAULT']['default_image'])
+print(default_image)
+matrix = RGBMatrix(options = options)
 
-    prevSong    = ""
-    currentSong = ""
+prevSong    = ""
+currentSong = ""
+@sio.on('track_data')
+def on_message(data):
+  print(data)
+  try:
+    while True:
+      try:
+        imageURL = data["images"][0]["url"]
+        currentSong = imageURL
 
-    try:
-      while True:
-        try:
-          imageURL = getSongInfo(username, token_path)[1]
-          currentSong = imageURL
-
-          if ( prevSong != currentSong ):
-            response = requests.get(imageURL)
-            image = Image.open(BytesIO(response.content))
-            image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
-            matrix.SetImage(image.convert('RGB'))
-            prevSong = currentSong
-
-          time.sleep(1)
-        except Exception as e:
-          image = Image.open(default_image)
+        if ( prevSong != currentSong ):
+          response = requests.get(imageURL)
+          image = Image.open(BytesIO(response.content))
           image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
           matrix.SetImage(image.convert('RGB'))
-          print(e)
-          time.sleep(1)
-    except KeyboardInterrupt:
-      sys.exit(0)
+          prevSong = currentSong
 
-else:
-    print("Usage: %s username" % (sys.argv[0],))
-    sys.exit()
+        time.sleep(1)
+      except Exception as e:
+        image = Image.open(default_image)
+        image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+        matrix.SetImage(image.convert('RGB'))
+        print(e)
+        time.sleep(1)
+  except KeyboardInterrupt:
+    sys.exit(0)
