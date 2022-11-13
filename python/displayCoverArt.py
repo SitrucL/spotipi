@@ -1,7 +1,6 @@
 import configparser
 import logging
 import os
-import sys
 import time
 from io import BytesIO
 from logging.handlers import RotatingFileHandler
@@ -52,25 +51,22 @@ currentSong = ""
 def on_message(data):
   print("new data: ")
   print(data)
+
   try:
-    while True:
-      try:
-        imageURL = data["images"][0]["url"]
-        currentSong = imageURL
+    imageURL = data["images"][0]["url"]
+    currentSong = imageURL
 
-        if ( prevSong != currentSong ):
-          response = requests.get(imageURL)
-          image = Image.open(BytesIO(response.content))
-          image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
-          matrix.SetImage(image.convert('RGB'))
-          prevSong = currentSong
+    if ( prevSong != currentSong ):
+      response = requests.get(imageURL)
+      image = Image.open(BytesIO(response.content))
+      image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+      matrix.SetImage(image.convert('RGB'))
+      prevSong = currentSong
 
-        time.sleep(1)
-      except Exception as e:
-        image = Image.open(default_image)
-        image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
-        matrix.SetImage(image.convert('RGB'))
-        print(e)
-        time.sleep(1)
-  except KeyboardInterrupt:
-    sys.exit(0)
+    time.sleep(1)
+  except Exception as e:
+    image = Image.open(default_image)
+    image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+    matrix.SetImage(image.convert('RGB'))
+    print(e)
+    time.sleep(1)
