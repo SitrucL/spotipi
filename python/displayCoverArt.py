@@ -53,7 +53,7 @@ def on_message(data):
   print(data)
 
   try:
-    imageURL = data["images"][0]["url"]
+    imageURL = data["currentlyPlaying"]["images"][0]["url"]
     currentSong = imageURL
 
     if ( prevSong != currentSong ):
