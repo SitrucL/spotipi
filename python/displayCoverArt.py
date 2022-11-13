@@ -44,14 +44,14 @@ default_image = os.path.join(dir, config['DEFAULT']['default_image'])
 print(default_image)
 matrix = RGBMatrix(options = options)
 
-prevSong    = ""
-currentSong = ""
 @sio.on('track_data')
 def on_message(data):
   print("new data: ", data)
 
 
   try:
+    prevSong    = ""
+    currentSong = ""
     imageURL = data["currentlyPlaying"]["images"][0]["url"]
     currentSong = imageURL
     print("currentSong: ", currentSong)
