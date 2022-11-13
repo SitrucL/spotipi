@@ -50,6 +50,7 @@ prevSong    = ""
 currentSong = ""
 @sio.on('track_data')
 def on_message(data):
+  print("new data: ")
   print(data)
   try:
     while True:
