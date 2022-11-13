@@ -46,15 +46,12 @@ matrix = RGBMatrix(options = options)
 
 @sio.on('track_data')
 def on_message(data):
-  print("new data: ", data)
-
 
   try:
     prevSong    = ""
     currentSong = ""
     imageURL = data["currentlyPlaying"]["images"][0]["url"]
     currentSong = imageURL
-    print("currentSong: ", currentSong)
 
     if ( prevSong != currentSong ):
       response = requests.get(imageURL)
