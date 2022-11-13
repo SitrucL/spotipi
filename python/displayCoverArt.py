@@ -38,7 +38,7 @@ options.chain_length = int(config['DEFAULT']['chain_length'])
 options.parallel = int(config['DEFAULT']['parallel'])
 options.hardware_mapping = config['DEFAULT']['hardware_mapping']
 options.gpio_slowdown = int(config['DEFAULT']['gpio_slowdown'])
-options.panel_type = int(config['DEFAULT']['panel_type'])
+options.panel_type = config['DEFAULT']['panel_type']
 options.brightness = int(config['DEFAULT']['brightness'])
 options.limit_refresh_rate_hz = int(config['DEFAULT']['refresh_rate'])
 
