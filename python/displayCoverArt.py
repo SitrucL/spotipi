@@ -49,17 +49,12 @@ matrix = RGBMatrix(options = options)
 def on_message(data):
 
   try:
-    prevSong    = ""
-    currentSong = ""
-    imageURL = data["currentlyPlaying"]["images"][0]["url"]
-    currentSong = imageURL
 
-    if ( prevSong != currentSong ):
-      response = requests.get(imageURL)
-      image = Image.open(BytesIO(response.content))
-      image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
-      matrix.SetImage(image.convert('RGB'))
-      prevSong = currentSong
+    imageURL = data["currentlyPlaying"]["images"][0]["url"]
+    response = requests.get(imageURL)
+    image = Image.open(BytesIO(response.content))
+    image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+    matrix.SetImage(image.convert('RGB'))
 
   except Exception as e:
     image = Image.open(default_image)
