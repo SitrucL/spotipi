@@ -12,7 +12,7 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 # Setup sockets
 sio = socketio.Client()
 # sio.connect('https://personal-spotify-handler.fly.dev')
-sio.connect("http://10.0.0.9:8080")
+sio.connect("http://192.168.1.31:8080")
 
 # Configuration file
 dir = os.path.dirname(__file__)
