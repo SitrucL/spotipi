@@ -11,6 +11,11 @@ This project is to display information on 32x32 led matrix from the Spotify web 
 - Edit the settings of the application within the dashboard.
   - Set the redirect uri to any local url such as http://127.0.0.1/callback
 - First step is to ssh to your raspberry pi to clone the repository
+- Install python and pip
+
+```
+sudo apt install python3-pip
+```
 
 - Next go ahead and change into the directory using
 
