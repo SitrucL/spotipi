@@ -9,17 +9,18 @@ import socketio  # upm package(python-socketio)
 from PIL import Image
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
-#Setup sockets 
+# Setup sockets
 sio = socketio.Client()
 # sio.connect('https://personal-spotify-handler.fly.dev')
-sio.connect('http://10.0.0.9:8080')
+sio.connect('192.168.1.31:8080')
 
-# Configuration file    
+# Configuration file
 dir = os.path.dirname(__file__)
 filename = os.path.join(dir, '../config/rgb_options.ini')
 
-# Configures logger for storing song data    
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename='spotipy.log',level=logging.INFO)
+# Configures logger for storing song data
+logging.basicConfig(format='%(asctime)s %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p', filename='spotipy.log', level=logging.INFO)
 logger = logging.getLogger('spotipy_logger')
 
 # automatically deletes logs more than 2000 bytes
@@ -43,21 +44,23 @@ options.limit_refresh_rate_hz = int(config['DEFAULT']['refresh_rate'])
 
 default_image = os.path.join(dir, config['DEFAULT']['default_image'])
 print(default_image)
-matrix = RGBMatrix(options = options)
+matrix = RGBMatrix(options=options)
+
 
 @sio.on('track_data')
 def on_message(data):
-  print(data["currentlyPlaying"]["images"][0]["url"])
+
+    print(data["currentlyPlaying"]["images"][0]["url"])
   try:
+ 
+        imageURL = data["currentlyPlaying"]["images"][0]["url"]
+        response = requests.get(imageURL)
+        image = Image.open(BytesIO(response.content))
+        image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+        matrix.SetImage(image.convert('RGB'))
 
-    imageURL = data["currentlyPlaying"]["images"][0]["url"]
-    response = requests.get(imageURL)
-    image = Image.open(BytesIO(response.content))
-    image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
-    matrix.SetImage(image.convert('RGB'))
-
-  except Exception as e:
-    image = Image.open(default_image)
-    image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
-    matrix.SetImage(image.convert('RGB'))
-    print(e)
+    except Exception as e:
+        image = Image.open(default_image)
+        image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+        matrix.SetImage(image.convert('RGB'))
+        print(e)
