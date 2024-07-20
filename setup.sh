@@ -7,7 +7,7 @@ echo "Installing pip:"
 sudo apt-get install python3-pip
 
 echo "Installing python-socketio library:"
-pip install python-socketio --upgrade
+pip install python-socketio[client]
 
 echo "Blacklist soundcard..."
 sudo touch /etc/modprobe.d/alsa-blacklist.conf
