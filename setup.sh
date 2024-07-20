@@ -6,17 +6,21 @@ sudo apt-get install libopenjp2-7 python3-dbus
 echo "Installing pip:"
 sudo apt-get install python3-pip
 
-echo "Installing spotipy library:"
-pip install spotipy --upgrade
-
 echo "Installing python-socketio library:"
 pip install python-socketio --upgrade
 
+echo "Blacklist soundcard..."
+sudo touch /etc/modprobe.d/alsa-blacklist.conf
+sudo echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
+
+echo "Installing spotipy library:"
+pip install spotipy==2.23.0
+
 echo "Installing pillow library:"
-pip install pillow --upgrade
+pip install pillow==9.3.0
 
 echo "Installing flask library:"
-pip install flask --upgrade
+pip install flask==3.0.0
 
 install_path=$(pwd)
 
