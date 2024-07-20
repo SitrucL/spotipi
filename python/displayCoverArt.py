@@ -5,14 +5,14 @@ from io import BytesIO
 from logging.handlers import RotatingFileHandler
 
 import requests
-import socketio  # upm package(python-socketio)
+import socketio
 from PIL import Image
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
 # Setup sockets
 sio = socketio.Client()
-# sio.connect('https://personal-spotify-handler.fly.dev')
-sio.connect("http://192.168.1.31:8080")
+sio.connect('https://personal-spotify-handler.fly.dev')
+# sio.connect("http://192.168.1.31:8080")
 
 # Configuration file
 dir = os.path.dirname(__file__)
